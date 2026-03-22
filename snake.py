@@ -1,5 +1,6 @@
 import random 
-from inputimeout import inputimeout, TimeoutOccurred
+import threading
+import time
 
 width = 20
 height = 20
@@ -22,32 +23,30 @@ class Snake:
             # if out of bounds, game should end
             print("GAME OVER\nSnake out of bounds")
             exit()
-
-        if (self.snakeParts[0].y in (yv.y for yv in self.snakeParts[1:])): 
-            # checks if snake is touching itself by comaring the head value to the read of the values 
-            print("GAME OVER\nSnake cannot touch itself") # seems to glitch and counts being next to as an end
-            exit()
         if self.snakeParts[0].x == location.x and self.snakeParts[0].y == location.y:
             screen.newApple() # if its touching the apple is creates a new apple
         else: 
             self.snakeParts.pop() # if it isnt it removes the last part to create new motion
             # should remove the last element to make it appear like its moving forward
+        if (self.snakeParts[0].y in (yv.y for yv in self.snakeParts[1:])): 
+            # checks if snake is touching itself by comaring the head value to the read of the values 
+            print("GAME OVER\nSnake cannot touch itself") # seems to glitch and counts being next to as an end
+            exit()
     def moveX(self, dir):
         self.snakeParts.insert(0, Cords(self.snakeParts[0].x + dir, self.snakeParts[0].y))
         print(f"{self.snakeParts[0].x} {self.snakeParts[0].y}")
         if (self.snakeParts[0].x >= width or self.snakeParts[0].x < 0) or (self.snakeParts[0].y >= height or self.snakeParts[0].y < 0):
             print("GAME OVER\nSnake out of bounds")
             exit()
-
-        if (self.snakeParts[0].x in (xv.x for xv in self.snakeParts[1:])): 
-            # checks if snake is touching itself by comaring the head value to the read of the values 
-            print("GAME OVER\nSnake cannot touch itself") # seems to glitch and counts being next to as an end
-            exit()
         if self.snakeParts[0].x == location.x and self.snakeParts[0].y == location.y:
             screen.newApple() # if its touching the apple is creates a new apple
         else: 
             self.snakeParts.pop() # if it isnt it removes the last part to create new motion
             # should remove the last element to make it appear like its moving forward
+        if (self.snakeParts[0].x in (xv.x for xv in self.snakeParts[1:])): 
+            # checks if snake is touching itself by comaring the head value to the read of the values 
+            print("GAME OVER\nSnake cannot touch itself") # seems to glitch and counts being next to as an end
+            exit()
  
 class Screen:
     screenElements: list = []
@@ -99,15 +98,8 @@ def update():
     screen.updScreen(userSnake)
     screen.printScreen()
 
-init()
-
-last_dir = 'w'
-while(True):
-    try: 
-        dir = inputimeout(prompt="wasd: ", timeout=1)
-    except TimeoutOccurred:
-        dir = last_dir
-    match dir:
+def move(rdir):
+    match rdir:
         case 'w': 
             userSnake.moveY(1) 
         case 's':
@@ -118,5 +110,20 @@ while(True):
             userSnake.moveX(1)
         case _:
             print("input not found")
-    last_dir = dir
     update()
+    time.sleep(0.5)
+
+
+def loop():
+    global last_dir
+    while True:
+        move(last_dir)
+
+init()
+
+last_dir = 'w'
+threading.Thread(target=loop, daemon=True).start()
+
+while(True):
+    dir = input("wasd: ")
+    last_dir = dir

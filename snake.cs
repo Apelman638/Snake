@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Security.Cryptography.X509Certificates;
 
 // currently does not end game if you make self contact
+// needs to run without input
 
 namespace Snake
 {
@@ -39,10 +40,10 @@ namespace Snake
             snakeSegs[0].y >= Globals.HEIGHT || snakeSegs[0].y < 0)
             {
                 Console.WriteLine("out of bounds, game over");
-                Console.WriteLine("Score: ", score);
+                Console.WriteLine("Score: " + score);
                 Environment.Exit(0);
             }
-            if (snakeSegs[0].x == Program.screen.location.x && snakeSegs[0].y == Program.screen.location.y)
+            if (snakeSegs[0].x == Progwram.screen.location.x && snakeSegs[0].y == Program.screen.location.y)
             {
                 Program.screen.newApple();
 
@@ -58,7 +59,7 @@ namespace Snake
             snakeSegs[0].y >= Globals.HEIGHT || snakeSegs[0].y < 0)
             {
                 Console.WriteLine("out of bounds, game over");
-                Console.WriteLine("Score: ", score);
+                Console.WriteLine("Score: " + score);
                 Environment.Exit(0);
             }
             if (snakeSegs[0].x == Program.screen.location.x && snakeSegs[0].y == Program.screen.location.y)
@@ -174,4 +175,3 @@ namespace Snake
         }
     }
 }
-
